@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# BASE_DIR = C:\Users\Mang\PycharmProjects\MangKyu.Blog
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+APP_NAME = 'home'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -25,8 +26,55 @@ SECRET_KEY = 'kpcgb@^9-c)nnlbh=n@q(iq4=0&jxphavt80#vlpfw9w24_+gm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {                        # message 출력 포맷 형식
+        'verbose': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
 
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'blog_log.log',        # message가 저장될 파일명(파일명 변경 가능)
+            'formatter': 'verbose'
+        },
+
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+
+        APP_NAME: {                          # Project에서 생성한 app의 이름
+            'handlers': ['file'],          # 다른 app을 생성 후 해당 app에서도
+            'level': 'DEBUG',              # 사용하고자 할 경우 해당 app 이름으로
+        },                                 # 좌측 코드를 추가 작성해서 사용
+
+    }
+
+}
+
+''' Use Like This
+import logging
+logger = logging.getLogger(__name__)
+logger.debug()
+
+'''
+
+
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -37,6 +85,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +103,7 @@ ROOT_URLCONF = 'conf.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, APP_NAME, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,7 +118,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'conf.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -80,6 +128,14 @@ DATABASES = {
     }
 }
 
+DATABASE_OPTIONS = {'charset': 'utf-8'}
+
+'''
+'USER': 'database_user_id',            # 해당 Engine에 접근 하기 위한 user_id (ex. root)
+'PASSWORD': 'database_password',       # 해당 Engine에 접근 하기 위한 password
+'HOST': 'localhost',
+'PORT': '',
+'''
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -99,22 +155,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'ko-kr'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, APP_NAME, 'static')
+STATIC_DIRS = (
+    STATIC_ROOT,
+)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, APP_NAME, 'media')
+

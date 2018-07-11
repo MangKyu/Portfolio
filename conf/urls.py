@@ -14,8 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls import url
+from conf import settings
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from home import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+    url('admin/', admin.site.urls),
+    url(r'^mypage/', views.display_my_page),
+    url(r'^mypage2/(?P<my_parameter>.+)', views.display_my_page_with_param)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+''' URL은 정규표현식과 함께 사용된다.
+    '^mypage2/(?P<my_parameter>.+)'부분에서 mypage2/~~~ 뒤에 내용은 my_parameter로 전달하라는 의미다.
+    일반적인 정규식이라면 '(.+)' 으로 나타내고 이 그룹의 이름은 Group#1 이겠지만,
+    파이썬에서는 '(?p<그룹 이름>.+)' 로 그룹이름을 임의로 적용할 수 있다.
+    여기서 설정한 my_parameter라는 그룹 이름은 views.display_my_page_with_param 에서 사용된다.
+'''
+
+urlpatterns += staticfiles_urlpatterns()
